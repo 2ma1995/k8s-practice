@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: soby-ns
+spec:
+# replica는 pod(my-nginx)를 관리하는역할
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-nginx
+  template:
+    metadata:
+      labels:
+        app: my-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+# --- 하나의 팟을 만드는 역할
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: soby-ns
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30084
+  selector:
+    app: my-nginx
