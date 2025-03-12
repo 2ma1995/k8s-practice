@@ -59,3 +59,4 @@ spec:
   commonName: server.2ma.shop
   dnsNames:
   - server.2ma.shop
+
