@@ -19,11 +19,9 @@ import java.util.Arrays;
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
-@EnableMethodSecurity
+@EnableMethodSecurity //PreAuthorize사용시 해당 어노테이션 선언 필요.
 public class SecurityConfig {
-
-    private final JwtAuthFilter authFilter; // 변수명 통일
-
+    private final JwtAuthFilter authFilter;
     public SecurityConfig(JwtAuthFilter authFilter) {
         this.authFilter = authFilter;
     }
@@ -31,15 +29,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .csrf(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
+//                spring security에서 cors 정책 지정.
+                .cors(c -> c.configurationSource(corsConfiguration()))
+                .csrf(AbstractHttpConfigurer::disable) //csrf(보안공격 중 하나) 비활성화
+                .httpBasic(AbstractHttpConfigurer::disable) //http basic 보안방식 비활성화
+//                세션로그인 방식 사용하지 않는다는 것을 의미.
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(a -> a
-                        .requestMatchers("/member/create", "/member/doLogin", "/product/list", "/member/refresh-token")
-                        .permitAll().anyRequest().authenticated())
-                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class) // 필터 변경
+//                token을 검증하고, token을 통해 Authentication객체 생성
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class) //Username... -> Authentication객체가 있는지 검사하는 클래스
+//                .authenticated() : 모든 요청에 대해 Authentication 객체가 생성되기를 요구
+                .authorizeHttpRequests(a -> a.requestMatchers("/member/create","/member/doLogin","member/refresh-token","/product/list").permitAll().anyRequest().authenticated())
                 .build();
     }
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() { // 메서드 이름 변경
