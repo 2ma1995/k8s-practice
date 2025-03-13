@@ -68,4 +68,3 @@ spec:
     targetPort: 8080
   selector:
     app: soby-order-backend
-
