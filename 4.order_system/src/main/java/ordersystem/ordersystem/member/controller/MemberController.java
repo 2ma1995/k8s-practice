@@ -108,4 +108,10 @@ public class MemberController {
 
     }
 
+    // 새로 추가된 health 엔드포인트
+    @GetMapping("/health")
+    public ResponseEntity<String> healthCheck() {
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
 }
