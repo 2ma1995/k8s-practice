@@ -4,7 +4,7 @@ metadata:
   name: soby-msa-ordering-depl
   namespace: soby-ns
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: soby-msa-ordering
